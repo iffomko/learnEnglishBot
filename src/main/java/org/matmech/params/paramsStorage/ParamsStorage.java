@@ -92,13 +92,37 @@ public class ParamsStorage {
         param.getParameters().remove(key, value);
     }
 
-    public UserParam getParam(long chatID) throws ParamsStorageException {
+    /**
+     * Получает параметр у пользователя
+     * @param chatID - уникальный идентификатор чата с пользователем
+     * @param key - параметр
+     * @return - значение параметра
+     * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
+     */
+    public String getParam(long chatID, String key) throws ParamsStorageException {
         UserParam result = searchParam(chatID);
 
         if (result == null) {
             throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
         }
 
-        return result;
+        return result.getParameters().get(key);
+    }
+
+    /**
+     * Получает строковое представление параметров для пользователей.
+     * Следует использовать исключительно для дебага.
+     * @param chatID - уникальный идентификатор чата с пользователем
+     * @return - строковое представление для параметров пользователя
+     * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
+     */
+    public String getStringView(int chatID) throws ParamsStorageException {
+        UserParam param = searchParam(chatID);
+
+        if (param == null) {
+            throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
+        }
+
+        return param.toString();
     }
 }

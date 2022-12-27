@@ -46,4 +46,21 @@ public class UserParam {
     public int hashCode() {
         return (int)chatId;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        result.append("ChatID: ");
+        result.append(String.valueOf(chatId));
+        result.append("\n");
+        result.append("Tag: ");
+        result.append(tag);
+        result.append("\n");
+        result.append("Setting: ");
+        result.append(setting);
+        result.append("\n");
+        result.append(parameters.toString());
+
+        return result.toString();
+    }
 }
