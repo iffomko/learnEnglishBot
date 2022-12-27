@@ -6,13 +6,13 @@ import java.util.Map;
 /**
  * Контейнер для хранения параметров пользователя
  */
-public class UserParameter {
+public class UserParam {
     private long chatId;
     private String tag;
     private boolean setting;
     private Map<String, String> parameters;
 
-    public UserParameter(long chatId, String tag) {
+    public UserParam(long chatId, String tag) {
         this.chatId = chatId;
         this.tag = tag;
         this.setting = false;
@@ -29,5 +29,21 @@ public class UserParameter {
 
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof UserParam)) {
+            throw new IllegalArgumentException("Неправильный аргумент для сравнения");
+        }
+
+        UserParam other = (UserParam) obj;
+
+        return other.chatId == chatId;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int)chatId;
     }
 }
