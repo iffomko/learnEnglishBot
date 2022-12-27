@@ -1,9 +1,9 @@
-package org.matmech.connector;
+package org.matmech.bot;
 
 /**
  * Общий интерфейс для всех ботов с обязательным методом <i>start</i>, который запускает всего бота
  */
-public interface Connector {
+public interface Bot {
     /**
      * Запускает бота
      */

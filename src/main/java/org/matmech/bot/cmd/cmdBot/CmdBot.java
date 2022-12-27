@@ -1,7 +1,7 @@
-package org.matmech.connector.cmd.cmdBot;
+package org.matmech.bot.cmd.cmdBot;
 
-import org.matmech.connector.Connector;
-import org.matmech.connector.cmd.cmdLogic.CmdLogic;
+import org.matmech.bot.Bot;
+import org.matmech.bot.cmd.cmdLogic.CmdLogic;
 import org.matmech.context.contextManager.ContextManager;
 
 import java.util.Scanner;
@@ -9,7 +9,7 @@ import java.util.Scanner;
 /**
  * Класс-интерфейс, который реализует консольную обертку над ботом
  */
-public class CmdBot implements Connector {
+public class CmdBot implements Bot {
     private String firstName;
     private String lastName;
     private String tag;

@@ -1,4 +1,4 @@
-package org.matmech.connector.telegram.telegramHandler;
+package org.matmech.bot.telegram.telegramHandler;
 
 import org.matmech.context.contextManager.ContextManager;
 import org.matmech.userData.UserData;

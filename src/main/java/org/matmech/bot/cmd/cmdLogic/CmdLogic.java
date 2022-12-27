@@ -1,4 +1,4 @@
-package org.matmech.connector.cmd.cmdLogic;
+package org.matmech.bot.cmd.cmdLogic;
 
 import org.matmech.context.contextManager.ContextManager;
 import org.matmech.userData.UserData;

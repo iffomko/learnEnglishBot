@@ -1,10 +1,10 @@
 package org.matmech;
 
-import org.matmech.connector.vk.VKBot;
+import org.matmech.bot.vk.VKBot;
 import org.matmech.context.Context;
-import org.matmech.connector.cmd.cmdBot.CmdBot;
-import org.matmech.connector.Connector;
-import org.matmech.connector.telegram.telegramBot.TelegramBot;
+import org.matmech.bot.cmd.cmdBot.CmdBot;
+import org.matmech.bot.Bot;
+import org.matmech.bot.telegram.telegramBot.TelegramBot;
 import org.matmech.context.contextManager.ContextManager;
 import org.matmech.db.DBHandler;
 
@@ -32,13 +32,13 @@ public class Main {
 
         // bots
 
-        Connector bot = new TelegramBot(TELEGRAM_BOT_USERNAME, TELEGRAM_BOT_TOKEN, contextManager);
+        Bot bot = new TelegramBot(TELEGRAM_BOT_USERNAME, TELEGRAM_BOT_TOKEN, contextManager);
         bot.start();
 
-        VKBot vkBot = new VKBot(VK_BOT_GROUP_ID, VK_BOT_ACCESS_TOKEN, contextManager);
+        Bot vkBot = new VKBot(VK_BOT_GROUP_ID, VK_BOT_ACCESS_TOKEN, contextManager);
         vkBot.start();
 
-        CmdBot cmdBot = new CmdBot(contextManager);
+        Bot cmdBot = new CmdBot(contextManager);
         cmdBot.start();
     }
 }

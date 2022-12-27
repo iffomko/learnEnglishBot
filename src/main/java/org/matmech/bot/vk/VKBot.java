@@ -1,4 +1,4 @@
-package org.matmech.connector.vk;
+package org.matmech.bot.vk;
 
 import com.vk.api.sdk.client.TransportClient;
 import com.vk.api.sdk.client.VkApiClient;
@@ -9,7 +9,7 @@ import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.objects.messages.Message;
 import com.vk.api.sdk.objects.users.User;
 import com.vk.api.sdk.queries.messages.MessagesGetLongPollHistoryQuery;
-import org.matmech.connector.Connector;
+import org.matmech.bot.Bot;
 import org.matmech.context.contextManager.ContextManager;
 import org.matmech.userData.UserData;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Бот для платформы VK
  */
-public class VKBot implements Connector {
+public class VKBot implements Bot {
     private final int groupId;
     private final String accessToken;
     private ContextManager contextManager;
