@@ -75,7 +75,6 @@ public class ParamsStorage {
 
         switch (key) {
             case "setting" -> param.setSetting(Boolean.parseBoolean(value));
-            case "processName" -> param.setProcessName(value);
             default -> {
                 if (param.getParameters().get(key) == null) {
                     param.getParameters().put(key, value);
@@ -120,7 +119,6 @@ public class ParamsStorage {
         return switch (key) {
             case "setting" -> String.valueOf(result.getSetting());
             case "tag" -> result.getTag();
-            case "processName" -> result.getProcessName();
             default -> result.getParameters().get(key);
         };
     }

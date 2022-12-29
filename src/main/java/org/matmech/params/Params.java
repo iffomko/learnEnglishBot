@@ -1,11 +1,8 @@
 package org.matmech.params;
 
-import org.matmech.context.Context;
 import org.matmech.db.DBHandler;
 import org.matmech.params.paramsStorage.ParamsStorage;
 import org.matmech.params.paramsStorage.ParamsStorageException;
-
-import java.util.Map;
 
 /**
  * Класс, который отвечает за получение и обработку входящих параметров
@@ -71,7 +68,7 @@ public class Params {
                     Integer testForCorrectNumber = Integer.valueOf(countWords);
                 } catch (NumberFormatException e) {
                     storage.setParam(chatId, "setting", "true");
-                    storage.setParam(chatId, "group", null);
+                    storage.setParam(chatId, "countWords", null);
 
                     throw new ParamsException(ParamsException.INVALID_COUNT_WORDS);
                 }
@@ -90,7 +87,7 @@ public class Params {
                     break;
                 default:
                     storage.setParam(chatId, "setting", "true");
-                    storage.setParam(chatId, "group", null);
+                    storage.setParam(chatId, "mode", null);
 
                     throw new ParamsException(ParamsException.INVALID_TEST_MODE);
             }
@@ -131,7 +128,8 @@ public class Params {
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, word, null);
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "word", null);
 
                 throw new ParamsException(ParamsException.NOT_EXIST_WORD);
             }
@@ -144,7 +142,6 @@ public class Params {
 
     /**
      * Обрабатывает полученные параметры для команды /get_group
-     * @param context - контекст для всех пользователей
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
@@ -165,7 +162,8 @@ public class Params {
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, word, null);
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "word", null);
 
                 throw new ParamsException(ParamsException.NOT_EXIST_WORD);
             }
@@ -177,169 +175,166 @@ public class Params {
     }
 
     /**
-     * Присваивает параметры для контекста команды /word_add
-     * @param chatId - идентификатор чата с пользователем
-     * @param message - сообщение, которое отправил пользователь
-     */
-    private void setWordAddParams(Context context, long chatId, String message) {
-        Map<String, String> params = context.getParams(chatId);
-
-        final String WORD = params.get("word");
-        final String TRANSLATE = params.get("translate");
-        final String GROUP = params.get("group");
-        final String PROCESS_NAME = params.get("processName");
-
-        if (WORD == null){
-            context.addParam(chatId, PROCESS_NAME, "word", message);
-            return;
-        }
-
-        if (GROUP == null){
-            context.addParam(chatId, PROCESS_NAME, "group", message);
-            return;
-        }
-
-        if (TRANSLATE == null)
-            context.addParam(chatId, PROCESS_NAME, "translate", message);
-    }
-
-    /**
      * Обрабатывает полученные параметры для команды /word_add
-     * @param context - контекст для всех пользователей
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String wordAddValidation(Context context, Long chatId){
-        Map<String, String> params = context.getParams(chatId);
+    private String wordAddParams(long chatId) throws ParamsException {
+        try {
+            String word = storage.getParam(chatId, "word");
+            String group = storage.getParam(chatId, "group");
+            String translate = storage.getParam(chatId, "translate");
 
-        final String PROCESS_NAME = params.get("processName");
-        final String WORD = params.get("word");
-        final String GROUP = params.get("group");
-        final String TRANSLATE = params.get("translate");
+            String message = storage.getParam(chatId, "message");
 
-        context.addParam(chatId, PROCESS_NAME, "settingParams", "true");
+            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "word", message);
+                storage.setParam(chatId, "setting", "false");
+            }
 
-        if (WORD == null)
-            return "Введи слово, которое хочешь добавить:";
+            if (group == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "group", message);
+                storage.setParam(chatId, "setting", "false");
+            }
 
-        if (GROUP == null)
-            return "Введи группу слова, которое хочешь добавить:";
+            if (translate == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "translate", message);
+                storage.setParam(chatId, "setting", "false");
+            }
 
-        if (TRANSLATE == null)
-            return "Введи перевод слова, которое хочешь добавить:";
+            if (word == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи слово, которое хочешь добавить:";
+            }
 
-        context.addParam(chatId, PROCESS_NAME, "settingParams", null);
+            if (!db.IsWordExist(word.toLowerCase())) {
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "word", null);
+
+                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+            }
+
+            if (group == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи группу слова, которое хочешь добавить:";
+            }
+
+            if (!db.groupIsExist(group)) {
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "group", null);
+
+                throw new ParamsException(ParamsException.NOT_EXIST_GROUP);
+            }
+
+            if (translate == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи перевод слова, которое хочешь добавить:";
+            }
+        } catch (ParamsStorageException e) {
+            System.out.println(e.getMessage());
+        }
 
         return null;
     }
 
     /**
-     * Присваивает параметры для контекста команды /edit
-     * @param chatId - идентификатор чата с пользователем
-     * @param message - сообщение, которое отправил пользователь
-     */
-    private void setEditParams(Context context, long chatId, String message) {
-        Map<String, String> params = context.getParams(chatId);
-
-        final String WORD = params.get("word");
-        final String WORD_PARAM = params.get("wordParam");
-        final String PARAM_VALUE = params.get("paramValue");
-        final String PROCESS_NAME = params.get("processName");
-
-        if (WORD == null){
-            context.addParam(chatId, PROCESS_NAME, "word", message);
-            return;
-        }
-
-        if (WORD_PARAM == null){
-            context.addParam(chatId, PROCESS_NAME, "wordParam", message);
-            return;
-        }
-
-        if (PARAM_VALUE == null)
-            context.addParam(chatId, PROCESS_NAME, "paramValue", message);
-    }
-
-    /**
      * Обрабатывает полученные параметры для команды /edit
-     * @param context - контекст для всех пользователей
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String editValidation(Context context, long chatId) {
-        Map<String, String> params = context.getParams(chatId);
+    private String editParams(long chatId) throws ParamsException {
+        try {
+            String word = storage.getParam(chatId, "word");
+            String param = storage.getParam(chatId, "wordParam");
+            String paramValue = storage.getParam(chatId, "paramValue");
 
-        final String PROCESS_NAME = params.get("processName");
-        final String WORD = params.get("word");
-        final String WORD_PARAM = params.get("wordParam");
-        final String PARAM_VALUE = params.get("paramValue");
+            String message = storage.getParam(chatId, "message");
 
-        context.addParam(chatId, PROCESS_NAME, "settingParams", "true");
-
-        if (WORD == null)
-            return "Введи слово, которое хочешь изменить:";
-
-        if (WORD_PARAM == null)
-            return "Введи параметр слова, которое хочешь изменить:";
-
-        switch (WORD_PARAM){
-            case "group", "translation" -> {}
-            default -> {
-                params.remove("wordParam");
-                params.put("wordParam", null);
-                return "Ой, кажется ты ввёл параметр неправильно, либо этот параметр не подлежит изменению! Повтори ввод!";
+            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "word", message);
+                storage.setParam(chatId, "setting", "false");
             }
+
+            if (param == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "param", message);
+                storage.setParam(chatId, "setting", "false");
+            }
+
+            if (paramValue == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "paramValue", message);
+                storage.setParam(chatId, "setting", "false");
+            }
+
+            if (word == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи слово, которое хочешь добавить:";
+            }
+
+            if (!db.IsWordExist(word.toLowerCase())) {
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "word", null);
+
+                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+            }
+
+            if (param == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи слово, которое хочешь изменить:";
+            }
+
+            switch (param) {
+                case "group", "translation": break;
+                default: {
+                    storage.setParam(chatId, "setting", "true");
+                    storage.setParam(chatId, "wordParam", null);
+
+                    throw new ParamsException(ParamsException.INVALID_PARAMETER);
+                }
+            }
+
+            if (paramValue == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи значение данного параметра:";
+            }
+        } catch (ParamsStorageException e) {
+            System.out.println(e.getMessage());
         }
-
-        if (PARAM_VALUE == null)
-            return "Введи значение данного параметра:";
-
-        context.addParam(chatId, PROCESS_NAME, "settingParams", null);
 
         return null;
     }
 
     /**
      * Обрабатывает полученные параметры для команды /delete_word
-     * @param context - контекст для всех пользователей
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String deleteWordValidation(Context context, long chatId) {
-        Map<String, String> params = context.getParams(chatId);
+    private String deleteWordParams(long chatId) throws ParamsException {
+        try {
+            String word = storage.getParam(chatId, "word");
 
-        final String PROCESS_NAME = params.get("processName");
-        final String WORD = params.get("word");
+            String message = storage.getParam(chatId, "storage");
 
-        context.addParam(chatId, PROCESS_NAME, "settingParams", "true");
+            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+                storage.setParam(chatId, "word", message.toLowerCase());
+                storage.setParam(chatId, "setting", "false");
+            }
 
-        if (WORD == null)
-            return "Введи слово, которое ты хочешь удалить:";
+            if (word == null) {
+                storage.setParam(chatId, "setting", "true");
+                return "Введи слово, которое ты хочешь удалить:";
+            }
 
-        if (!db.IsWordExist(WORD)) {
-            params.remove("word");
-            params.put("word", null);
-            return "Ой, кажется ты ввёл слово неправильно! Повтори ввод!";
+            if (!db.IsWordExist(word.toLowerCase())) {
+                storage.setParam(chatId, "setting", "true");
+                storage.setParam(chatId, "word", null);
+
+                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+            }
+        } catch (ParamsStorageException e) {
+            System.out.println(e.getMessage());
         }
 
-        context.addParam(chatId, PROCESS_NAME, "settingParams", null);
-
         return null;
-    }
-
-    /**
-     * Присваивает параметры для контекста команды /delete_word
-     * @param chatId - идентификатор чата с пользователем
-     * @param message - сообщение, которое отправил пользователь
-     */
-    private void setDeleteWordParams(Context context, long chatId, String message) {
-        Map<String, String> params = context.getParams(chatId);
-
-        final String WORD = params.get("word");
-        final String PROCESS_NAME = params.get("processName");
-
-        if (WORD == null)
-            context.addParam(chatId, PROCESS_NAME, "word", message);
     }
 
     public Params(DBHandler db) {
@@ -352,45 +347,31 @@ public class Params {
     /**
      * Обработчик параметров
      * @param chatId - идентификатор чата с пользователем
+     * @param contextName - имя контекста, для которого мы собираем параметры
      * @param message - сообщение, которое отправил пользователь
      * @return - возвращает сообщение-валидации или null, если заполнение параметров прошло успешно
      */
-    public String handler(long chatId, String tag, String message) throws ParamsException {
+    public String handler(long chatId, String tag, String contextName, String message) throws ParamsException {
         try {
             if (!storage.isExist(chatId)) {
                 storage.createParams(chatId, tag);
             }
 
-            final String processName = storage.getParam(chatId, "processName");
-
             storage.setParam(chatId, "message", message);
 
-            return switch (processName) {
+            return switch (contextName) {
                 case "testing" -> testParams(chatId);
                 case "translating" -> translateParams(chatId);
                 case "getGroup" -> getGroupParams(chatId);
-                case "wordAdd" -> {
-                    if (context.getParams(chatId).get("settingParams") != null)
-                        setWordAddParams(context, chatId, message);
-
-                    yield wordAddValidation(context, chatId);
-                }
-                case "edit" -> {
-                    if (context.getParams(chatId).get("settingParams") != null)
-                        setEditParams(context, chatId, message);
-
-                    yield editValidation(context, chatId);
-                }
-                case "deleteWord" -> {
-                    if (context.getParams(chatId).get("settingParams") != null)
-                        setDeleteWordParams(context, chatId, message);
-
-                    yield deleteWordValidation(context, chatId);
-                }
+                case "wordAdd" -> wordAddParams(chatId);
+                case "edit" -> editParams(chatId);
+                case "deleteWord" -> deleteWordParams(chatId);
                 default -> null;
             };
         } catch (ParamsStorageException e) {
             System.out.println(e.getMessage());
         }
+
+        return null;
     }
 }
