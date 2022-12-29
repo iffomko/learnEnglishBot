@@ -1,13 +1,16 @@
-package org.matmech.params;
+package org.matmech.paramsCollector;
 
 import org.matmech.db.DBHandler;
-import org.matmech.params.paramsStorage.ParamsStorage;
-import org.matmech.params.paramsStorage.ParamsStorageException;
+import org.matmech.paramsCollector.paramsStorage.ParamsStorage;
+import org.matmech.paramsCollector.paramsStorage.ParamsStorageException;
+import org.matmech.paramsCollector.paramsStorage.UserParam;
+
+import java.util.Map;
 
 /**
  * Класс, который отвечает за получение и обработку входящих параметров
  */
-public class Params {
+public class ParamsCollector {
     // toDo: заменить флажки "testing" на контейнер с этими флажками и chatID. Можно целых класс написать для этого.
 
     private final DBHandler db;
@@ -20,7 +23,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String testParams(long chatId) throws ParamsException {
+    private String testParams(long chatId) throws ParamsCollectorException {
         try {
             String group = storage.getParam(chatId, "group");
             String countWords = storage.getParam(chatId, "countWords");
@@ -53,7 +56,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "group", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_GROUP);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_GROUP);
             }
 
             if (countWords == null) {
@@ -70,7 +73,7 @@ public class Params {
                     storage.setParam(chatId, "setting", "true");
                     storage.setParam(chatId, "countWords", null);
 
-                    throw new ParamsException(ParamsException.INVALID_COUNT_WORDS);
+                    throw new ParamsCollectorException(ParamsCollectorException.INVALID_COUNT_WORDS);
                 }
             }
 
@@ -89,7 +92,7 @@ public class Params {
                     storage.setParam(chatId, "setting", "true");
                     storage.setParam(chatId, "mode", null);
 
-                    throw new ParamsException(ParamsException.INVALID_TEST_MODE);
+                    throw new ParamsCollectorException(ParamsCollectorException.INVALID_TEST_MODE);
             }
 
             if (countWords.equals("стандартное")) {
@@ -111,7 +114,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String translateParams(long chatId) throws ParamsException {
+    private String translateParams(long chatId) throws ParamsCollectorException {
         try {
             String word = storage.getParam(chatId, "word");
 
@@ -131,7 +134,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "word", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
         } catch (ParamsStorageException e) {
             System.out.println(e.getMessage());
@@ -145,7 +148,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String getGroupParams(long chatId) throws ParamsException {
+    private String getGroupParams(long chatId) throws ParamsCollectorException {
         try {
             String word = storage.getParam(chatId, "word");
 
@@ -165,7 +168,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "word", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
         } catch (ParamsStorageException e) {
             System.out.println(e.getMessage());
@@ -179,7 +182,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String wordAddParams(long chatId) throws ParamsException {
+    private String wordAddParams(long chatId) throws ParamsCollectorException {
         try {
             String word = storage.getParam(chatId, "word");
             String group = storage.getParam(chatId, "group");
@@ -211,7 +214,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "word", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
 
             if (group == null) {
@@ -223,7 +226,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "group", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_GROUP);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_GROUP);
             }
 
             if (translate == null) {
@@ -242,7 +245,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String editParams(long chatId) throws ParamsException {
+    private String editParams(long chatId) throws ParamsCollectorException {
         try {
             String word = storage.getParam(chatId, "word");
             String param = storage.getParam(chatId, "wordParam");
@@ -274,7 +277,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "word", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
 
             if (param == null) {
@@ -288,7 +291,7 @@ public class Params {
                     storage.setParam(chatId, "setting", "true");
                     storage.setParam(chatId, "wordParam", null);
 
-                    throw new ParamsException(ParamsException.INVALID_PARAMETER);
+                    throw new ParamsCollectorException(ParamsCollectorException.INVALID_PARAMETER);
                 }
             }
 
@@ -308,7 +311,7 @@ public class Params {
      * @param chatId - идентификатор чата с пользователем
      * @return - возвращает текст ошибки для пользователя или null при успехе
      */
-    private String deleteWordParams(long chatId) throws ParamsException {
+    private String deleteWordParams(long chatId) throws ParamsCollectorException {
         try {
             String word = storage.getParam(chatId, "word");
 
@@ -328,7 +331,7 @@ public class Params {
                 storage.setParam(chatId, "setting", "true");
                 storage.setParam(chatId, "word", null);
 
-                throw new ParamsException(ParamsException.NOT_EXIST_WORD);
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
         } catch (ParamsStorageException e) {
             System.out.println(e.getMessage());
@@ -337,7 +340,7 @@ public class Params {
         return null;
     }
 
-    public Params(DBHandler db) {
+    public ParamsCollector(DBHandler db) {
         this.db = db;
         this.storage = new ParamsStorage();
         STANDARD_COUNT_WORDS = "10";
@@ -351,7 +354,7 @@ public class Params {
      * @param message - сообщение, которое отправил пользователь
      * @return - возвращает сообщение-валидации или null, если заполнение параметров прошло успешно
      */
-    public String handler(long chatId, String tag, String contextName, String message) throws ParamsException {
+    public String handler(long chatId, String tag, String contextName, String message) throws ParamsCollectorException {
         try {
             if (!storage.isExist(chatId)) {
                 storage.createParams(chatId, tag);
@@ -368,6 +371,21 @@ public class Params {
                 case "deleteWord" -> deleteWordParams(chatId);
                 default -> null;
             };
+        } catch (ParamsStorageException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    /**
+     * Возвращает параметры пользователя
+     * @param chatID - уникальный идентификатор чата с пользователем
+     * @return - Map<String, String> с параметрами
+     */
+    public Map<String, String> getParams(long chatID) {
+        try {
+            return storage.getAllParams(chatID);
         } catch (ParamsStorageException e) {
             System.out.println(e.getMessage());
         }

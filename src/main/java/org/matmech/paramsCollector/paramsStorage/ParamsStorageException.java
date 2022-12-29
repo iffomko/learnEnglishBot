@@ -1,4 +1,4 @@
-package org.matmech.params.paramsStorage;
+package org.matmech.paramsCollector.paramsStorage;
 
 /**
  * Внутренние ошибки для класса ParamsStorage

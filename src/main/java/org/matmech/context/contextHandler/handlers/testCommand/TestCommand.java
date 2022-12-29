@@ -3,7 +3,6 @@ package org.matmech.context.contextHandler.handlers.testCommand;
 import org.matmech.context.contextHandler.handlers.Command;
 import org.matmech.userData.UserData;
 import org.matmech.db.DBHandler;
-import org.matmech.context.Context;
 
 import java.util.*;
 

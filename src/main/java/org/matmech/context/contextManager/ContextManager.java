@@ -1,19 +1,19 @@
 package org.matmech.context.contextManager;
 
-import org.matmech.context.Context;
 import org.matmech.context.contextHandler.ContextHandler;
+import org.matmech.paramsCollector.ParamsCollector;
+import org.matmech.paramsCollector.paramsStorage.ParamsStorage;
 import org.matmech.userData.UserData;
 import org.matmech.db.DBHandler;
-import org.matmech.params.Params;
 
 import java.util.List;
 
 /**
  * Класс, который обрабатывает контекст команды
  */
-public class ContextManager { // убрать стоп операцию из параметров и добавить её суда (сделать через контекст для каждого пользователя)
-    final private Context context;
-    final private Params paramsHandler;
+public class ContextManager {
+    final private ParamsCollector paramsCollector;
+
     final private ContextHandler contextHandler;
     private DBHandler db;
 
@@ -54,10 +54,9 @@ public class ContextManager { // убрать стоп операцию из п�
         };
     }
 
-    public ContextManager(Context context, DBHandler dbHandler) {
-        this.context = context;
+    public ContextManager(DBHandler dbHandler) {
         db = dbHandler;
-        paramsHandler = new Params(dbHandler);
+        paramsCollector = new ParamsCollector(dbHandler);
         contextHandler = new ContextHandler(dbHandler);
     }
 
@@ -87,7 +86,7 @@ public class ContextManager { // убрать стоп операцию из п�
         if (!context.isBusy(CHAT_ID))
             context.setProcessName(CHAT_ID, CONTEXT);
 
-        String paramsAnswer = paramsHandler.handler(context, CHAT_ID, message);
+        String paramsAnswer = paramsCollector.handler(context, CHAT_ID, message);
 
         if (paramsAnswer == null)
             return contextHandler.handle(context, info, message);

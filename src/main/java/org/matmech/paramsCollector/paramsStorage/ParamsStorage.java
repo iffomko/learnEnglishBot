@@ -1,7 +1,8 @@
-package org.matmech.params.paramsStorage;
+package org.matmech.paramsCollector.paramsStorage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Класс, который хранит в себе список параметров для всех пользователей
@@ -130,7 +131,7 @@ public class ParamsStorage {
      * @return - строковое представление для параметров пользователя
      * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
      */
-    public String getStringView(int chatID) throws ParamsStorageException {
+    public String getStringView(long chatID) throws ParamsStorageException {
         UserParam param = searchParam(chatID);
 
         if (param == null) {
@@ -138,5 +139,21 @@ public class ParamsStorage {
         }
 
         return param.toString();
+    }
+
+    /**
+     * Возвращает параметры
+     * @param chatID - уникальный идентификатор чата с пользователем
+     * @return - Map<String, String> с параметрами
+     * @throws ParamsStorageException
+     */
+    public Map<String, String> getAllParams(long chatID) throws ParamsStorageException {
+        UserParam param = searchParam(chatID);
+
+        if (param == null) {
+            throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
+        }
+
+        return param.getParameters();
     }
 }

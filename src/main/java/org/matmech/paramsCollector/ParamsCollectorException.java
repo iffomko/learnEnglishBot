@@ -1,9 +1,9 @@
-package org.matmech.params;
+package org.matmech.paramsCollector;
 
 /**
- * Внутренний набор ошибок для класса Params
+ * Внутренний набор ошибок для класса ParamsCollector
  */
-public final class ParamsException extends Exception {
+public final class ParamsCollectorException extends Exception {
     private static class ErrorCode {
         private final int errorCode;
         private final String errorMessage;
@@ -56,7 +56,7 @@ public final class ParamsException extends Exception {
 
     private ErrorCode currentError;
 
-    public ParamsException(int errorCode) {
+    public ParamsCollectorException(int errorCode) {
         switch (errorCode) {
             case NOT_EXIST_GROUP -> this.currentError = NOT_EXIST_GROUP_ERROR;
             case INVALID_TEST_MODE -> this.currentError = INVALID_TEST_MODE_ERROR;

@@ -1,6 +1,5 @@
 package org.matmech.context.contextHandler;
 
-import org.matmech.context.Context;
 import org.matmech.context.contextHandler.handlers.deleteWordCommand.DeleteWordCommand;
 import org.matmech.context.contextHandler.handlers.editCommand.EditCommand;
 import org.matmech.context.contextHandler.handlers.getGroupCommand.GetGroupCommand;

@@ -1,6 +1,5 @@
 package org.matmech.context.contextHandler.handlers;
 
-import org.matmech.context.Context;
 import org.matmech.userData.UserData;
 
 import java.util.List;

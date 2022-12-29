@@ -1,7 +1,6 @@
 package org.matmech;
 
 import org.matmech.bot.vk.VKBot;
-import org.matmech.context.Context;
 import org.matmech.bot.cmd.cmdBot.CmdBot;
 import org.matmech.bot.Bot;
 import org.matmech.bot.telegram.telegramBot.TelegramBot;

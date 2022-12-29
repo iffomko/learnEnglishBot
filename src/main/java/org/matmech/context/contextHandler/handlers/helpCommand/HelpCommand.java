@@ -1,6 +1,5 @@
 package org.matmech.context.contextHandler.handlers.helpCommand;
 
-import org.matmech.context.Context;
 import org.matmech.context.contextHandler.handlers.Command;
 import org.matmech.userData.UserData;
 

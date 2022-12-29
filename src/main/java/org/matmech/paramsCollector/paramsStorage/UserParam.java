@@ -1,4 +1,4 @@
-package org.matmech.params.paramsStorage;
+package org.matmech.paramsCollector.paramsStorage;
 
 import java.util.HashMap;
 import java.util.Map;

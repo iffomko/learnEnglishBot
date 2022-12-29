@@ -2,7 +2,6 @@ package TestCommands;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.matmech.context.Context;
 import org.matmech.context.contextManager.ContextManager;
 import org.matmech.userData.UserData;
 import org.matmech.db.DBHandler;
