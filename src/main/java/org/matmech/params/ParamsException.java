@@ -1,9 +1,9 @@
-package org.matmech.params.parameterException;
+package org.matmech.params;
 
 /**
- * Свой набор ошибок для класса Params
+ * Внутренний набор ошибок для класса Params
  */
-public final class ParameterException extends Exception {
+public final class ParamsException extends Exception {
     private static class ErrorCode {
         private final int errorCode;
         private final String errorMessage;
@@ -56,7 +56,7 @@ public final class ParameterException extends Exception {
 
     private ErrorCode currentError;
 
-    public ParameterException(int errorCode) {
+    public ParamsException(int errorCode) {
         switch (errorCode) {
             case NOT_EXIST_GROUP -> this.currentError = NOT_EXIST_GROUP_ERROR;
             case INVALID_TEST_MODE -> this.currentError = INVALID_TEST_MODE_ERROR;

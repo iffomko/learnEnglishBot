@@ -33,7 +33,7 @@ public class ParamsStorage {
      * @param chatID - уникальный идентификатор чата с пользователем
      * @return - возвращает true, если объект существует, или false, если не существует
      */
-    public boolean isExist(int chatID) {
+    public boolean isExist(long chatID) {
         for (UserParam param : users) {
             if (param.getChatID() == chatID) {
                 return true;
@@ -49,7 +49,7 @@ public class ParamsStorage {
      * @param tag - тег пользователя
      * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя уже существуют
      */
-    public void createParam(long chatID, String tag) throws ParamsStorageException {
+    public void createParams(long chatID, String tag) throws ParamsStorageException {
         UserParam param = new UserParam(chatID, tag);
 
         if (users.contains(param)) {
@@ -60,20 +60,31 @@ public class ParamsStorage {
     }
 
     /**
-     * Добавляет параметр пользователю
+     * Устанавливает параметр пользователю
      * @param chatID - уникальный идентификатор чата с пользователем
      * @param key - название параметра
      * @param value - значение параметра
      * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
      */
-    public void addParam(long chatID, String key, String value) throws ParamsStorageException {
+    public void setParam(long chatID, String key, String value) throws ParamsStorageException {
         UserParam param = searchParam(chatID);
 
         if (param == null) {
             throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
         }
 
-        param.getParameters().put(key, value);
+        switch (key) {
+            case "setting" -> param.setSetting(Boolean.parseBoolean(value));
+            case "processName" -> param.setProcessName(value);
+            default -> {
+                if (param.getParameters().get(key) == null) {
+                    param.getParameters().put(key, value);
+                    return;
+                }
+
+                param.getParameters().replace(key, value);
+            }
+        }
     }
     /**
      * Удаляет параметр у пользователя
@@ -106,7 +117,12 @@ public class ParamsStorage {
             throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
         }
 
-        return result.getParameters().get(key);
+        return switch (key) {
+            case "setting" -> String.valueOf(result.getSetting());
+            case "tag" -> result.getTag();
+            case "processName" -> result.getProcessName();
+            default -> result.getParameters().get(key);
+        };
     }
 
     /**

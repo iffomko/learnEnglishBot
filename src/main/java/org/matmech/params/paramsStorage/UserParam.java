@@ -10,12 +10,14 @@ public class UserParam {
     private long chatId;
     private String tag;
     private boolean setting;
+    private String processName;
     private Map<String, String> parameters;
 
     public UserParam(long chatId, String tag) {
         this.chatId = chatId;
         this.tag = tag;
         this.setting = false;
+        this.processName = null;
         parameters = new HashMap<String, String>();
     }
 
@@ -29,6 +31,14 @@ public class UserParam {
 
     public Map<String, String> getParameters() {
         return parameters;
+    }
+
+    public boolean getSetting() {
+        return setting;
+    }
+
+    public void setSetting(boolean setting) {
+        this.setting = setting;
     }
 
     @Override
@@ -62,5 +72,13 @@ public class UserParam {
         result.append(parameters.toString());
 
         return result.toString();
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public void setProcessName(String processName) {
+        this.processName = processName;
     }
 }
