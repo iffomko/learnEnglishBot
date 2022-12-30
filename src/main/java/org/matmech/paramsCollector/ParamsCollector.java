@@ -3,20 +3,28 @@ package org.matmech.paramsCollector;
 import org.matmech.db.DBHandler;
 import org.matmech.paramsCollector.paramsStorage.ParamsStorage;
 import org.matmech.paramsCollector.paramsStorage.ParamsStorageException;
-import org.matmech.paramsCollector.paramsStorage.UserParam;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
  * Класс, который отвечает за получение и обработку входящих параметров
  */
 public class ParamsCollector {
-    // toDo: заменить флажки "testing" на контейнер с этими флажками и chatID. Можно целых класс написать для этого.
-
     private final DBHandler db;
     private final ParamsStorage storage;
+    private final ArrayList<ParamsState> state;
     private final String STANDARD_COUNT_WORDS;
     private final String STANDARD_MODE;
+
+    private ParamsState getParamsState(long chatID) {
+        for (ParamsState item : state)
+            if (item.getChatID() == chatID) {
+                return item;
+            }
+
+        return null;
+    }
 
     /**
      * Обрабатывает полученные параметры для команды /test
@@ -31,36 +39,42 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "message");
 
-            if (group == null && storage.getParam(chatId, "setting").equals("true")) {
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
+            if (group == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "group", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (countWords == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (countWords == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "countWords", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (mode == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (mode == null  && paramsState.getSetting()) {
                 storage.setParam(chatId, "mode", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (group == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Пожалуйста, введите группу слов, по которым вы хотите произвести тестирование\n" +
                         "Если хотите провести тестирование по всем группу, то напишите `Все`";
             }
 
             if (!db.groupIsExist(group) && !group.equals("все")) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "group", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_GROUP);
             }
 
             if (countWords == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Пожалуйста, введите количество слов в тесте\n" +
                         "Если хотите провести тестирование по всем группу, то напишите `По всем`\n" +
                         "Если хотите стандартное количество слов (10), то напишите `Стандартное`";
@@ -70,7 +84,7 @@ public class ParamsCollector {
                 try {
                     Integer testForCorrectNumber = Integer.valueOf(countWords);
                 } catch (NumberFormatException e) {
-                    storage.setParam(chatId, "setting", "true");
+                    paramsState.toggleSetting();
                     storage.setParam(chatId, "countWords", null);
 
                     throw new ParamsCollectorException(ParamsCollectorException.INVALID_COUNT_WORDS);
@@ -78,7 +92,7 @@ public class ParamsCollector {
             }
 
             if (mode == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введите режим тестирование: `Easy` - легкий, `Difficult` - сложный\n" +
                         "Если хотите стандартный режим (Easy), то введите `Стандартный`";
             }
@@ -89,7 +103,7 @@ public class ParamsCollector {
                 case "стандартный":
                     break;
                 default:
-                    storage.setParam(chatId, "setting", "true");
+                    paramsState.toggleSetting();
                     storage.setParam(chatId, "mode", null);
 
                     throw new ParamsCollectorException(ParamsCollectorException.INVALID_TEST_MODE);
@@ -120,18 +134,24 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "storage");
 
-            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
+            if (word == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "word", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (word == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое хочешь перевести:";
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "word", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
@@ -154,18 +174,24 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "storage");
 
-            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
+            if (word == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "word", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (word == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое хочешь перевести:";
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "word", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
@@ -190,47 +216,53 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "message");
 
-            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
+            if (word == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "word", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (group == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (group == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "group", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (translate == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (translate == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "translate", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (word == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое хочешь добавить:";
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "word", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
 
             if (group == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи группу слова, которое хочешь добавить:";
             }
 
             if (!db.groupIsExist(group)) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "group", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_GROUP);
             }
 
             if (translate == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи перевод слова, которое хочешь добавить:";
             }
         } catch (ParamsStorageException e) {
@@ -253,42 +285,48 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "message");
 
-            if (word == null && storage.getParam(chatId, "setting").equals("true")) {
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
+            if (word == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "word", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (param == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (param == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "param", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
-            if (paramValue == null && storage.getParam(chatId, "setting").equals("true")) {
+            if (paramValue == null && paramsState.getSetting()) {
                 storage.setParam(chatId, "paramValue", message);
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (word == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое хочешь добавить:";
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "word", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
             }
 
             if (param == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое хочешь изменить:";
             }
 
             switch (param) {
                 case "group", "translation": break;
                 default: {
-                    storage.setParam(chatId, "setting", "true");
+                    paramsState.toggleSetting();
                     storage.setParam(chatId, "wordParam", null);
 
                     throw new ParamsCollectorException(ParamsCollectorException.INVALID_PARAMETER);
@@ -296,7 +334,7 @@ public class ParamsCollector {
             }
 
             if (paramValue == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи значение данного параметра:";
             }
         } catch (ParamsStorageException e) {
@@ -317,18 +355,24 @@ public class ParamsCollector {
 
             String message = storage.getParam(chatId, "storage");
 
+            ParamsState paramsState = getParamsState(chatId);
+
+            if (paramsState == null) {
+                throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_STATE);
+            }
+
             if (word == null && storage.getParam(chatId, "setting").equals("true")) {
                 storage.setParam(chatId, "word", message.toLowerCase());
-                storage.setParam(chatId, "setting", "false");
+                paramsState.toggleSetting();
             }
 
             if (word == null) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 return "Введи слово, которое ты хочешь удалить:";
             }
 
             if (!db.IsWordExist(word.toLowerCase())) {
-                storage.setParam(chatId, "setting", "true");
+                paramsState.toggleSetting();
                 storage.setParam(chatId, "word", null);
 
                 throw new ParamsCollectorException(ParamsCollectorException.NOT_EXIST_WORD);
@@ -343,6 +387,7 @@ public class ParamsCollector {
     public ParamsCollector(DBHandler db) {
         this.db = db;
         this.storage = new ParamsStorage();
+        this.state = new ArrayList<ParamsState>();
         STANDARD_COUNT_WORDS = "10";
         STANDARD_MODE = "easy";
     }
@@ -358,6 +403,12 @@ public class ParamsCollector {
         try {
             if (!storage.isExist(chatId)) {
                 storage.createParams(chatId, tag);
+            }
+
+            ParamsState paramsState = new ParamsState(chatId);
+
+            if (!state.contains(paramsState)) {
+                state.add(paramsState);
             }
 
             storage.setParam(chatId, "message", message);
@@ -391,5 +442,17 @@ public class ParamsCollector {
         }
 
         return null;
+    }
+
+    /**
+     * Очищает параметры для пользователя
+     * @param chatID - уникальный идентификатор чата с пользователем
+     */
+    public void clearParams(long chatID) {
+        try {
+            storage.clearParams(chatID);
+        } catch (ParamsStorageException e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

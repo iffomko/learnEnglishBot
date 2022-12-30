@@ -142,10 +142,10 @@ public class ParamsStorage {
     }
 
     /**
-     * Возвращает параметры
+     * Возвращает параметры пользователя
      * @param chatID - уникальный идентификатор чата с пользователем
      * @return - Map<String, String> с параметрами
-     * @throws ParamsStorageException
+     * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
      */
     public Map<String, String> getAllParams(long chatID) throws ParamsStorageException {
         UserParam param = searchParam(chatID);
@@ -155,5 +155,20 @@ public class ParamsStorage {
         }
 
         return param.getParameters();
+    }
+
+    /**
+     * Очищает параметры для пользователя
+     * @param chatID - уникальный идентификатор чата с пользователем
+     * @throws ParamsStorageException - может возвращать ошибку, если объект с параметрами у пользователя не существует
+     */
+    public void clearParams(long chatID) throws ParamsStorageException {
+        UserParam param = searchParam(chatID);
+
+        if (param == null) {
+            throw new ParamsStorageException(ParamsStorageException.NOT_EXIST_PARAM);
+        }
+
+        param.getParameters().clear();
     }
 }

@@ -71,7 +71,6 @@ public class ContextManager {
             return List.of("Вы не зарегистрированы в системе! Чтобы зарегистрироваться в системе напишите /start");
 
         final long CHAT_ID = info.getChatId();
-        final String CONTEXT = getContext(message);
 
         if (context.getParams(CHAT_ID) == null)
             context.setProcessName(CHAT_ID, null);

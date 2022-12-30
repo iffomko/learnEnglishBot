@@ -28,6 +28,7 @@ public final class ParamsCollectorException extends Exception {
     public static final int INVALID_COUNT_WORDS = 3;
     public static final int NOT_EXIST_WORD = 4;
     public static final int INVALID_PARAMETER = 5;
+    public static final int NOT_EXIST_STATE = 6;
 
     public static final ErrorCode NOT_EXIST_GROUP_ERROR = new ErrorCode(
             NOT_EXIST_GROUP,
@@ -53,6 +54,11 @@ public final class ParamsCollectorException extends Exception {
             UNKNOWN,
             "Неизвестный код ошибки. Повторите попытку:"
     );
+    public static final ErrorCode NOT_EXIST_STATE_ERROR = new ErrorCode(
+            NOT_EXIST_STATE,
+            "Такое состояние параметров не было найдено с таким chatID." +
+                    "Пожалуйста перед его использованием создайте это состояние!"
+    );
 
     private ErrorCode currentError;
 
@@ -63,6 +69,7 @@ public final class ParamsCollectorException extends Exception {
             case INVALID_COUNT_WORDS -> this.currentError = INVALID_COUNT_WORDS_ERROR;
             case NOT_EXIST_WORD -> this.currentError = NOT_EXIST_WORD_ERROR;
             case INVALID_PARAMETER -> this.currentError = INVALID_PARAMETER_ERROR;
+            case NOT_EXIST_STATE -> this.currentError = NOT_EXIST_STATE_ERROR;
             default -> currentError = UNKNOWN_ERROR;
         }
     }
